@@ -50,6 +50,7 @@ def detect(frame):
 
     results = []
 
+
     # loop over the detections
     for i in np.arange(0, detections.shape[2]):
         # extract the confidence (i.e., probability) associated with the
@@ -69,12 +70,10 @@ def detect(frame):
             (startX, startY, endX, endY) = box.astype("int")
 
             # display the prediction
-            
             if CLASSES[idx] == "bottle":
                 label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
                 print("[INFO] {}".format(label))
-                cv2.rectangle(image, (startX, startY), (endX, endY),
-                    COLORS[idx], 2)
+                
                 y = startY - 15 if startY - 15 > 15 else startY + 15
                 cv2.putText(image, label, (startX, y),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
@@ -97,11 +96,19 @@ cap = cv2.VideoCapture(0)
 print("Known classes")
 print(CLASSES)
 
+contabottle = 0
+
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
     
     result_frame, result_tuples = detect(frame)
+
+    if CLASSES == "bottle":
+        contabottle += 1
+        if contabottle <= 5:
+                    cv2.rectangle(image, (startX, startY), (endX, endY),
+                        COLORS[idx], 2)
 
 
     # Display the resulting frame

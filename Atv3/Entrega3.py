@@ -83,8 +83,10 @@ while(cap.isOpened()):
   # Convertendo o frame para GRAY:
   frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
+  mask2 = cv2.inRange(frame_gray, 240, 255)
+
   # Tirando os ruidos da imagem:
-  frame_blur = cv2.GaussianBlur(frame_gray,(5,5),0)
+  frame_blur = cv2.GaussianBlur(mask2,(5,5),0)
     
   # Retirando as bordas do frame:
   edges = cv2.Canny(frame_blur, 25, 75)
@@ -92,12 +94,40 @@ while(cap.isOpened()):
   # Bordas com cor:
   edges_color = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
 
+
+  if __name__ == '__main__':
+    print(__doc__)
+
+    dst = imutils.auto_canny(edges) # aplica o detector de bordas de Canny à imagem src
+    cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR) # Converte a imagem para BGR para permitir desenho colorido
+
+    if True: # HoughLinesP
+        lines = cv2.HoughLines(dst, 1, math.pi/180.0, 110, np.array([]), 0, 0)
+        a,b,c = lines.shape
+        for i in range(a):
+            rho = lines[i][0][0]
+            theta = lines[i][0][1]
+            m = math.cos(theta)
+            h = math.sin(theta)
+            x0, y0 = m*rho, h*rho
+            pt1 = ( int(x0+1000*(-h)), int(y0+1000*(m)) )
+            pt2 = ( int(x0-1000*(-h)), int(y0-1000*(m)) )
+            if m <= (-0.22) and m >= (-2.03):
+              cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)
+
+            elif m <= (2.71) and m >= (0.43):
+              cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)
+              
+        print("Used old vanilla Hough transform")
+        print("Returned points will be radius and angles")
+
+    cv2.imshow("detected lines", cdst)
   # Mostrando o resultado:
-  cv2.imshow("Output", edges)
+  #cv2.imshow("Output", edges)
 
   # Apertar Q para sair do loop principal:
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-      break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Fechando as janelas e desligando a webcam:
 cv2.destroyAllWindows()

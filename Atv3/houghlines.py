@@ -1,13 +1,6 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
 
-'''
-This example illustrates how to use Hough Transform to find lines
-
-Usage:
-    houghlines.py [<image_name>]
-    image argument defaults to ./box.png
-'''
 
 # Python 2/3 compatibility
 from __future__ import print_function
@@ -16,6 +9,8 @@ import cv2
 import numpy as np
 import sys
 import math
+import Entrega3
+import imutils
 
 if __name__ == '__main__':
     print(__doc__)
@@ -26,7 +21,7 @@ if __name__ == '__main__':
         fn = "./V1.mp4"
 
     src = cv2.VideoCapture(fn)
-    dst = cv2.Canny(src, 50, 200) # aplica o detector de bordas de Canny à imagem src
+    dst = imutils.auto_canny(src, 50, 200) # aplica o detector de bordas de Canny à imagem src
     cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR) # Converte a imagem para BGR para permitir desenho colorido
 
     if True: # HoughLinesP
@@ -41,7 +36,7 @@ if __name__ == '__main__':
 
     else:    # HoughLines
         # Esperemos nao cair neste caso
-        lines = cv2.HoughLines(dst, 1, math.pi/180.0, 50, np.array([]), 0, 0)
+        lines = cv2.HoughLines(dst, 1, math.pi/180.0, 10, np.array([]), 0, 0)
         a,b,c = lines.shape
         for i in range(a):
             rho = lines[i][0][0]
@@ -51,7 +46,8 @@ if __name__ == '__main__':
             x0, y0 = m*rho, h*rho
             pt1 = ( int(x0+1000*(-h)), int(y0+1000*(m)) )
             pt2 = ( int(x0-1000*(-h)), int(y0-1000*(m)) )
-            cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)
+            if m <= (-0.55) and m >= (-2.03):
+                cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)
         print("Used old vanilla Hough transform")
         print("Returned points will be radius and angles")
 
