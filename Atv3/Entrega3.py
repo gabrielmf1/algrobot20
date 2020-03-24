@@ -101,6 +101,9 @@ while(cap.isOpened()):
     dst = imutils.auto_canny(edges) # aplica o detector de bordas de Canny à imagem src
     cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR) # Converte a imagem para BGR para permitir desenho colorido
 
+    lista_1 =[]
+    lista_2 = []
+
     if True: # HoughLinesP
         lines = cv2.HoughLines(dst, 1, math.pi/180.0, 110, np.array([]), 0, 0)
         a,b,c = lines.shape
@@ -114,6 +117,7 @@ while(cap.isOpened()):
             pt2 = ( int(x0-1000*(-h)), int(y0-1000*(m)) )
             if m <= (-0.22) and m >= (-2.03):
               cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)
+
 
             elif m <= (2.71) and m >= (0.43):
               cv2.line(cdst, pt1, pt2, (0, 0, 255), 3, cv2.LINE_AA)

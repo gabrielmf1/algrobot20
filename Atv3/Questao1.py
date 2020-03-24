@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 #Imports
-from __future__ import print_function
+from __future__ import print_function, division
 
 import cv2
 import imutils
@@ -10,6 +10,7 @@ import numpy as np
 import math
 from math import acos, degrees, sqrt
 import sys
+import random
 
 #Parametros de teste
 #p1 = [3.0,2.5]
@@ -52,6 +53,7 @@ def coeficiente (P1, P2):
 	h = ay - (m * ax)
 
 	return m, h
+
 
 def Intersecao (h1, h2, m1, m2):
 
@@ -100,7 +102,8 @@ while(cap.isOpened()):
 
     dst = imutils.auto_canny(edges) # aplica o detector de bordas de Canny à imagem src
     cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR) # Converte a imagem para BGR para permitir desenho colorido
-
+    lista_1 =[]
+    lista_2 =[]  
     if True: # HoughLinesP
         lines = cv2.HoughLines(dst, 1, math.pi/180.0, 110, np.array([]), 0, 0)
         a,b,c = lines.shape
@@ -112,14 +115,28 @@ while(cap.isOpened()):
             x0, y0 = m*rho, h*rho
             pt1 = ( int(x0+1000*(-h)), int(y0+1000*(m)) )
             pt2 = ( int(x0-1000*(-h)), int(y0-1000*(m)) )
-            if m <= (-0.22) and m >= (-2.03):
-              cv2.line(cdst, pt1, pt2, (0, 0, 255), 2, cv2.LINE_AA)
 
-            elif m <= (2.71) and m >= (0.43):
+            if m <= (-0.22) and m >= (-2.03):
+              cv2.line(cdst, pt1, pt2, (0, 255,0), 2, cv2.LINE_AA)
+              lista_1.append((pt1,pt2))
+
+            if m <= (2.71) and m >= (0.43):
               cv2.line(cdst, pt1, pt2, (0, 0, 255), 2, cv2.LINE_AA)
-              
-        #print("Used old vanilla Hough transform")
-        #print("Returned points will be radius and angles")
+              lista_2.append((pt1,pt2))
+
+     
+    if len(lista_1) > 0:
+      if len(lista_2) > 0:
+
+        p1, p2 = random.choice(lista_1)
+        p3, p4 = random.choice(lista_2)
+
+        m1, h1 = coeficiente(p1,p2)
+        m2, h2 = coeficiente(p3,p4)
+        X,Y = Intersecao(h1,h2,m1,m2)
+        print(X,",", Y)
+        cv2.circle(cdst,(int(X),int(Y)),30,(0,168,197),4)
+
 
     cv2.imshow("detected lines", cdst)
   # Mostrando o resultado:
