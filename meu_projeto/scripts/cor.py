@@ -89,7 +89,7 @@ if __name__=="__main__":
 	try:
 
 		while not rospy.is_shutdown():
-			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+			vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
 			if len(media) != 0 and len(centro) != 0:
 				print("Média dos vermelhos: {0}, {1}".format(media[0], media[1]))
 				print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))

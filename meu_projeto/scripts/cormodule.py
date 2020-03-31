@@ -14,6 +14,7 @@ from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 import smach
 import smach_ros
+import auxiliar as aux
 
 
 def identifica_cor(frame):
@@ -29,7 +30,7 @@ def identifica_cor(frame):
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
 
-    cor_rgb = "#306309"
+    cor_rgb = "#2e600c"
     cor_menor, cor_maior = aux.ranges(cor_rgb)
 
 
