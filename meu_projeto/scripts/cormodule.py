@@ -30,7 +30,7 @@ def identifica_cor(frame):
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
 
-    cor_rgb = "#2e600c"
+    cor_rgb = "#006306"
     cor_menor, cor_maior = aux.ranges(cor_rgb)
 
 

@@ -93,11 +93,18 @@ if __name__=="__main__":
 			if len(media) != 0 and len(centro) != 0:
 				print("Média dos vermelhos: {0}, {1}".format(media[0], media[1]))
 				print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))
+				spec = media[0]-centro[0]
 
-				if (media[0] > centro[0]):
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
-				if (media[0] < centro[0]):
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
+				if -40 < spec and spec < 40:
+					vel = Twist(Vector3(0.2,0,0), Vector3(0,0,0))
+					
+				elif spec < -40:
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.3))
+
+				elif spec > 40:
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.3))
+
+
 			velocidade_saida.publish(vel)
 			rospy.sleep(0.1)
 
