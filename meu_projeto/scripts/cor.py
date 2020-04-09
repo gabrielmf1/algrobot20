@@ -14,6 +14,7 @@ from geometry_msgs.msg import Twist, Vector3, Pose
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import LaserScan
 import cormodule
 import le_scan
 import roda
@@ -29,7 +30,7 @@ area = 0.0 # Variavel com a area do maior contorno
 
 # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados. 
 # Descarta imagens que chegam atrasadas demais
-check_delay = False 
+check_delay = False
 
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
@@ -55,7 +56,18 @@ def roda_todo_frame(imagem):
 		cv2.imshow("Camera", cv_image)
 	except CvBridgeError as e:
 		print('ex', e)
-	
+
+valor_dist = 0
+def scaneou(dado):
+	print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
+	print("Leituras:")
+	print(np.array(dado.ranges).round(decimals=2))
+	#print("Intensities")
+	#print(np.array(dado.intensities).round(decimals=2))
+	global valor_dist
+	if dado.range_min < dado.ranges[0] < dado.range_max:
+		valor_dist = dado.ranges[0]
+
 if __name__=="__main__":
 	rospy.init_node("cor")
 
@@ -84,7 +96,9 @@ if __name__=="__main__":
 	recebedor = rospy.Subscriber(topico_imagem, CompressedImage, roda_todo_frame, queue_size=4, buff_size = 2**24)
 	print("Usando ", topico_imagem)
 
-	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
+	recebe_scan = rospy.Subscriber("/scan", LaserScan, scaneou)
+
+	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 3)
 
 	try:
 
@@ -95,14 +109,21 @@ if __name__=="__main__":
 				print("Centro dos vermelhos: {0}, {1}".format(centro[0], centro[1]))
 				spec = media[0]-centro[0]
 
-				if -40 < spec and spec < 40:
-					vel = Twist(Vector3(0.2,0,0), Vector3(0,0,0))
-					
-				elif spec < -40:
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.3))
+				if valor_dist > 0.85:
 
-				elif spec > 40:
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.3))
+					if -40 < spec and spec < 40:
+						vel = Twist(Vector3(0.2,0,0), Vector3(0,0,0))
+					
+					elif spec < -40:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.3))
+
+					elif spec > 40:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.3))
+
+				elif valor_dist > 0.4 and valor_dist <= 0.85:
+					vel = Twist(Vector3(0.04,0,0), Vector3(0,0,0))
+				else:
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 
 
 			velocidade_saida.publish(vel)
