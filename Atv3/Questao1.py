@@ -25,14 +25,14 @@ import random
 
 #Abrindo videos
 
-cap = cv2.VideoCapture("V1.mp4")
+cap = cv2.VideoCapture("lines.mp4")
 video2 = cv2.VideoCapture("V2.mp4")
 video3 = cv2.VideoCapture("V3.mp4")
 
 # Definindo os limites das cores:
 # HSV -> Hue Sat Value
-lower = np.array([57, 50, 50])
-upper = np.array([67, 255, 255])
+lower = np.array([0, 0, 255])
+upper = np.array([0, 255, 0])
 
 #Funções
 
@@ -106,7 +106,7 @@ while(cap.isOpened()):
     lista_2 =[]  
     if True: # HoughLinesP
         lines = cv2.HoughLines(dst, 1, math.pi/180.0, 110, np.array([]), 0, 0)
-        a,b,c = lines.shape
+        #a,b,c = lines.shape
         for i in range(a):
             rho = lines[i][0][0]
             theta = lines[i][0][1]

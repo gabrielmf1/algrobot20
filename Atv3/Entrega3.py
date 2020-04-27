@@ -24,7 +24,7 @@ import sys
 
 #Abrindo videos
 
-cap = cv2.VideoCapture("V1.mp4")
+cap = cv2.VideoCapture("lines.mp4")
 video2 = cv2.VideoCapture("V2.mp4")
 video3 = cv2.VideoCapture("V3.mp4")
 
